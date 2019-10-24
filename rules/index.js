@@ -16,6 +16,6 @@ const configure = (list, level) => {
 module.exports.configs = {
   recommended: {
     plugins: ['fluidly'],
-    rules: configure(rules, 1),
+    rules: configure(rules, 2),
   },
 };
