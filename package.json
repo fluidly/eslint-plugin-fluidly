@@ -1,0 +1,47 @@
+{
+  "name": "eslint-plugin-fluidly",
+  "description": "eslint plugins for the Fluidly codebase",
+  "version": "1.5.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fluidly/eslint-plugin-fluidly"
+  },
+  "keywords": [
+    "moment-js",
+    "date-fns",
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin"
+  ],
+  "author": "miketownsend",
+  "main": "rules/index.js",
+  "scripts": {
+    "test:watch": "jest --watch",
+    "test": "jest --coverage",
+    "precommit": "pretty-quick --staged"
+  },
+  "devDependencies": {
+    "babel-eslint": "^9.0.0",
+    "date-fns": "^2.0.0",
+    "eslint": "^5.5.0",
+    "jest": "^23.5.0",
+    "prettier": "^1.14.2",
+    "pretty-quick": "^1.6.0"
+  },
+  "dependencies": {
+    "kebab-case": "^1.0.0"
+  },
+  "peerDependencies": {
+    "eslint": "^5.5.0"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "lib/**/*.js"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "./tests/performance.js"
+    ]
+  },
+  "license": "MIT"
+}
