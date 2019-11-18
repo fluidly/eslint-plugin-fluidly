@@ -86,9 +86,6 @@ module.exports = {
           checkFunctionOrExpression(node)
         }
       },
-      Switch: function(node) {
-        console.log('SWITCH')
-      },
     }
   },
   meta: {
