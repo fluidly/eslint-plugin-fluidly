@@ -16,21 +16,16 @@ const getNodeChildren = node => {
 
 const getNodeChildrenRaw = node => {
   if (!node) return
-  if (node.type === 'Literal') return
-  if (node.type === 'ReturnStatement') return
-  if (node.type === 'VariableDeclaration') return
-  if (node.type === 'CallExpression') return
-
   if (node.body) return node.body
+
+  if (node.type === 'IfStatement')
+    return [node.test, node.consequent, node.alternate]
+  if (node.type === 'MethodDefinition') return [node.value]
   if (node.type === 'SwitchStatement') return node.cases
   if (node.type === 'SwitchCase') return [node.test, ...node.consequent]
   if (node.type === 'ExpressionStatement') return [node.expression]
 
-  console.log(
-    'UNKNOWN',
-    node.type,
-    omit(['expression', 'parent', 'loc', '_babelType', 'start', 'end'])(node)
-  )
+  return
 }
 
 module.exports = {
@@ -44,9 +39,7 @@ module.exports = {
 
     const findSwitchOrganisationConstant = node => {
       if (!node) return
-      console.log('Node', file, node.type)
 
-      // if this is an identifier, return true if it is SWITCH_ORGANISATION
       if (
         node.type === 'Identifier' &&
         node.name === 'SWITCH_ORGANISATION' &&
