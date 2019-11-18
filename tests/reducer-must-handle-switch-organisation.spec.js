@@ -1,15 +1,5 @@
 const rule = require('../rules').rules
-const RuleTester = require('eslint').RuleTester
-
-RuleTester.setDefaultConfig({
-  parser: 'babel-eslint',
-  parserOptions: {
-    ecmaVersion: 6,
-    sourceType: 'module',
-  },
-})
-
-var ruleTester = new RuleTester()
+const ruleTester = require('./ruleTester')
 
 const valid0 = {
   filename: 'not-the-right-filename.js',

@@ -1,15 +1,5 @@
-const rule = require('../rules').rules;
-const RuleTester = require('eslint').RuleTester;
-
-RuleTester.setDefaultConfig({
-  parser: 'babel-eslint',
-  parserOptions: {
-    ecmaVersion: 6,
-    sourceType: 'module',
-  },
-});
-
-var ruleTester = new RuleTester();
+const ruleTester = require('./ruleTester')
+const rule = require('../rules').rules
 
 describe('ESLint plugin', () => {
   ruleTester.run('no-new-date-for-parsing', rule['no-new-date-for-parsing'], {
@@ -36,5 +26,5 @@ describe('ESLint plugin', () => {
         ],
       },
     ],
-  });
-});
+  })
+})
