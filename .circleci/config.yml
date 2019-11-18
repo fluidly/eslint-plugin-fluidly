@@ -1,0 +1,32 @@
+version: 2.1
+
+commands:
+  yarn_install:
+    steps:
+      - run:
+          name: install
+          command: |
+            if [ ! -d node_modules ]; then
+              yarn install --frozen-lockfile
+            fi
+
+jobs:
+  yarn_test:
+    resource_class: small
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - yarn_install
+      - run:
+          name: test
+          command: yarn test
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - yarn_test:
+          filters:
+            branches:
+              ignore: master
