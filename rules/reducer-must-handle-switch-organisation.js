@@ -39,9 +39,7 @@ module.exports = {
 
     const findSwitchOrganisationConstant = node => {
       if (!node) return
-      console.log('Node', file, node.type)
 
-      // if this is an identifier, return true if it is SWITCH_ORGANISATION
       if (
         node.type === 'Identifier' &&
         node.name === 'SWITCH_ORGANISATION' &&
