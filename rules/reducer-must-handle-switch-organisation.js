@@ -33,8 +33,8 @@ module.exports = {
     const file = context.getFilename()
     const checkFunctionOrExpression = node => {
       const hasSwitchOrganisation = findSwitchOrganisationConstant(node)
-      if (!hasSwitchOrganisation)
-        context.report(node, 'Reducers must handle SWITCH_ORGANISATION action')
+      // if (!hasSwitchOrganisation)
+      //   context.report(node, 'Reducers must handle SWITCH_ORGANISATION action')
     }
 
     const findSwitchOrganisationConstant = node => {
