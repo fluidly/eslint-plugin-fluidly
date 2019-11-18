@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/fluidly/eslint-plugin-fluidly.svg?style=svg)](https://circleci.com/gh/fluidly/eslint-plugin-fluidly)
+
 # eslint-plugin-fluidly
 
 Custom eslint plugins for the Fluidly codebase
