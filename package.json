@@ -23,7 +23,7 @@
   "devDependencies": {
     "babel-eslint": "^10.1.0",
     "date-fns": "^2.15.0",
-    "eslint": "^7.5.0",
+    "eslint": "^7.6.0",
     "jest": "^26.2.1",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1"
