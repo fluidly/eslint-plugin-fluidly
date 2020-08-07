@@ -11,10 +11,10 @@ const {
 } = require('lodash/fp');
 
 module.exports = {
-  create: function(context) {
+  create: function (context) {
     const file = context.getFilename();
 
-    const getFunctionContent = node => {};
+    const getFunctionContent = node => { };
 
     const getNodeContent = node => {
       switch (node.type) {
@@ -71,7 +71,10 @@ module.exports = {
       const validAfterAllExpressions = body.filter(
         node =>
           node.type === 'ExpressionStatement' &&
-          ['afterAll', 'afterEach'].includes(node.expression.callee.name) &&
+          get('expression.type')(node) === 'CallExpression' &&
+          ['afterAll', 'afterEach'].includes(
+            get('expression.callee.name')(node)
+          ) &&
           hasResetArgumentOrCall(node.expression.arguments)
       );
       if (validAfterAllExpressions.length > 0) return true;
