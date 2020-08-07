@@ -1,27 +1,80 @@
 'use strict';
 
-const { get, isArray, isEmpty, omit } = require('lodash/fp');
+const {
+  get,
+  first,
+  find,
+  filter,
+  isArray,
+  isEmpty,
+  omit,
+} = require('lodash/fp');
 
 module.exports = {
   create: function(context) {
     const file = context.getFilename();
 
-    const hasResetArgument = args => {
-      const hasResetAllIdentifier = args.find(
-        arg => arg.type === 'Identifier' && arg.name === 'resetAll'
-      );
+    const getFunctionContent = node => {};
 
-      return !!hasResetAllIdentifier;
+    const getNodeContent = node => {
+      switch (node.type) {
+        case 'Program':
+        case 'BlockStatement':
+          return node.body;
+        case 'FunctionExpression':
+        case 'ArrowFunctionExpression':
+          return getNodeContent(node.body);
+        case 'AwaitExpression':
+        case 'ExpressionStatement':
+          return [node.expression];
+        case 'ReturnExpression':
+          return [node.argument];
+      }
+
+      return [node];
     };
 
-    const checkNodeForValidReset = node => {
-      const validAfterAllExpressions = node.body.filter(
+    const hasResetArgumentOrCall = args => {
+      const node = first(args);
+      if (!node) return false;
+
+      const { type, name } = node;
+      if (type === 'Identifier' && node.name === 'resetAll') return true;
+
+      if (type === 'ArrowFunctionExpression' || type === 'FunctionExpression') {
+        const asyncAwait = node.async;
+        const body = getNodeContent(node);
+        if (asyncAwait && checkNodesForAwaitedReset(body)) return true;
+        if (checkNodesForReturnedReset(body)) return true;
+      }
+
+      return false;
+    };
+
+    const checkNodesForReturnedReset = nodes =>
+      !!find(
+        node =>
+          node.type === 'ReturnStatement' &&
+          get('argument.callee.name')(node) === 'resetAll'
+      )(nodes);
+
+    const checkNodesForAwaitedReset = nodes =>
+      !!find(
+        node =>
+          node.type === 'ExpressionStatement' &&
+          get('expression.type')(node) === 'AwaitExpression' &&
+          get('expression.argument.callee.name')(node) === 'resetAll'
+      )(nodes);
+
+    const checkNodeForAfterWithReset = node => {
+      const body = getNodeContent(node);
+      const validAfterAllExpressions = body.filter(
         node =>
           node.type === 'ExpressionStatement' &&
           ['afterAll', 'afterEach'].includes(node.expression.callee.name) &&
-          hasResetArgument(node.expression.arguments)
+          hasResetArgumentOrCall(node.expression.arguments)
       );
-      return validAfterAllExpressions.length > 0;
+      if (validAfterAllExpressions.length > 0) return true;
     };
 
     const checkIfDescribeBlock = node => {
@@ -36,12 +89,12 @@ module.exports = {
         'expression.arguments[1].body',
         node
       );
-      return checkNodeForValidReset(describeFunctionBlockStatement);
+      return checkNodeForAfterWithReset(describeFunctionBlockStatement);
     };
 
     const checkIfAnyParentHasValidReset = node => {
       if (node.parent.type === 'Program')
-        return checkNodeForValidReset(node.parent);
+        return checkNodeForAfterWithReset(node.parent);
       if (
         checkIfDescribeBlock(node.parent) &&
         checkDescribeBlockForValidReset(node.parent)

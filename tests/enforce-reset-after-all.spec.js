@@ -1,6 +1,9 @@
 const rule = require('../rules').rules;
 const ruleTester = require('./ruleTester');
 
+const ErrorMessage =
+  'No reset was found in or above this describe function. Must call afterEach(resetAll) or afterAll(resetAll) somewhere in that chain';
+
 const page = children => `
 import { resetAll } from 'test/render'
 ${children}
@@ -72,6 +75,36 @@ const valid3 = {
   code: page(describeWithResetFirst(describeWithoutReset())),
 };
 
+const valid4 = {
+  filename: 'Test1.spec.tsx',
+  code: page(`
+    afterAll(async () => {
+      await resetAll()
+    })
+    ${describeWithoutReset()}
+  `),
+};
+
+const valid5 = {
+  filename: 'Test1.spec.tsx',
+  code: page(`
+    afterAll(() => {
+      return resetAll()
+    })
+    ${describeWithoutReset()}
+  `),
+};
+
+const valid6 = {
+  filename: 'Test1.spec.tsx',
+  code: page(`
+    afterAll(function () {
+      return resetAll()
+    })
+    ${describeWithoutReset()}
+  `),
+};
+
 const invalid0 = {
   filename: 'Test1.spec.tsx',
   code: page(describeWithoutReset()),
@@ -89,8 +122,23 @@ const invalid1 = {
   code: page(describeWithoutReset(describeWithResetFirst())),
   errors: [
     {
-      message:
-        'No reset was found in or above this describe function. Must call afterEach(resetAll) or afterAll(resetAll) somewhere in that chain',
+      message: ErrorMessage,
+      type: 'ExpressionStatement',
+    },
+  ],
+};
+
+const invalid2 = {
+  filename: 'Test1.spec.tsx',
+  code: page(`
+    afterAll(() => {
+      resetAll()
+    })
+    ${describeWithoutReset()}
+  `),
+  errors: [
+    {
+      message: ErrorMessage,
       type: 'ExpressionStatement',
     },
   ],
@@ -98,7 +146,7 @@ const invalid1 = {
 
 describe('enforce-reset-after-all', () => {
   ruleTester.run('enforce-reset-after-all', rule['enforce-reset-after-all'], {
-    valid: [valid0, valid1, valid2, valid3],
-    invalid: [invalid0, invalid1],
+    valid: [valid0, valid1, valid2, valid3, valid4, valid5, valid6],
+    invalid: [invalid0, invalid1, invalid2],
   });
 });
