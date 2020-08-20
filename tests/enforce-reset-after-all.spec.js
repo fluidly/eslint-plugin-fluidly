@@ -51,6 +51,12 @@ const describeWithoutReset = (children = '') => `
   })
 `;
 
+const describeWithoutResetOrTest = (children = '') => `
+  describe('test', () => {
+    ${children}
+  })
+`;
+
 const valid0 = {
   filename: 'Test1.spec.tsx',
   code: page(`
@@ -105,6 +111,13 @@ const valid6 = {
   `),
 };
 
+const valid7 = {
+  filename: 'Test1.spec.tsx',
+  code: page(`
+    ${describeWithoutResetOrTest(describeWithResetFirst())}
+  `),
+};
+
 const invalid0 = {
   filename: 'Test1.spec.tsx',
   code: page(describeWithoutReset()),
@@ -146,7 +159,7 @@ const invalid2 = {
 
 describe('enforce-reset-after-all', () => {
   ruleTester.run('enforce-reset-after-all', rule['enforce-reset-after-all'], {
-    valid: [valid0, valid1, valid2, valid3, valid4, valid5, valid6],
+    valid: [valid0, valid1, valid2, valid3, valid4, valid5, valid6, valid7],
     invalid: [invalid0, invalid1, invalid2],
   });
 });

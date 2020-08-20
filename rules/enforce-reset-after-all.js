@@ -11,10 +11,10 @@ const {
 } = require('lodash/fp');
 
 module.exports = {
-  create: function (context) {
+  create: function(context) {
     const file = context.getFilename();
 
-    const getFunctionContent = node => { };
+    const getFunctionContent = node => {};
 
     const getNodeContent = node => {
       switch (node.type) {
@@ -80,6 +80,19 @@ module.exports = {
       if (validAfterAllExpressions.length > 0) return true;
     };
 
+    const checkNodeForTestContent = node => {
+      const body = getNodeContent(node);
+      const expressions = body.filter(
+        bodyNode =>
+          bodyNode.type === 'ExpressionStatement' &&
+          get('expression.type')(bodyNode) === 'CallExpression' &&
+          ['beforeAll', 'beforeEach', 'test', 'it'].includes(
+            get('expression.callee.name')(bodyNode)
+          )
+      );
+      if (expressions.length > 0) return true;
+    };
+
     const checkIfDescribeBlock = node => {
       return (
         node.type === 'ExpressionStatement' &&
@@ -93,6 +106,14 @@ module.exports = {
         node
       );
       return checkNodeForAfterWithReset(describeFunctionBlockStatement);
+    };
+
+    const checkDescribeBlockForTestContent = node => {
+      const describeFunctionBlockStatement = get(
+        'expression.arguments[1].body',
+        node
+      );
+      return checkNodeForTestContent(describeFunctionBlockStatement);
     };
 
     const checkIfAnyParentHasValidReset = node => {
@@ -111,6 +132,7 @@ module.exports = {
       ExpressionStatement: node => {
         if (!checkIfDescribeBlock(node)) return;
         if (
+          checkDescribeBlockForTestContent(node) &&
           !checkDescribeBlockForValidReset(node) &&
           !checkIfAnyParentHasValidReset(node)
         ) {
