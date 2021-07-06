@@ -4,6 +4,7 @@ const rules = Object.assign(
     'enforce-reset-after-all': require('./enforce-reset-after-all'),
     'no-new-date-for-parsing': require('./no-new-date-for-parsing'),
     'reducer-must-handle-switch-organisation': require('./reducer-must-handle-switch-organisation'),
+    'no-string-ordering-comparison': require('./no-string-ordering-comparison'),
   }
 );
 
