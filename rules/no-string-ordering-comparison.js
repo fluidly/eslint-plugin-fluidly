@@ -1,16 +1,13 @@
 "use strict"
 
-
-function isComparisonOperator(operator) {
-  return ['>=', '<=', '>', '<'].includes(operator)
-}
-
-
+// yolo
+const isComparisonOperator = operator => ['>=', '<=', '>', '<'].includes(operator);
+const isString = (node) => typeof node.value === 'string'
 
 module.exports = {
   create: context => ({
     BinaryExpression: node => {
-      if (isComparisonOperator(node.operator) && typeof node.left.value === 'string' && typeof node.right.value === 'string') {
+      if (isComparisonOperator(node.operator) && isString(node.left) && isString(node.right)) {
         context.report(
           node,
           "String ordering comparisons not allowed",
